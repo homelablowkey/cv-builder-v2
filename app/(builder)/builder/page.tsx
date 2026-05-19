@@ -5,6 +5,7 @@ import * as Lucide from 'lucide-react';
 import FormPanel from './_components/FormPanel';
 import { Preview } from './_components/Preview';
 import { useCVStore } from '@/lib/store/useCVStore';
+import { AuthGate } from '@/components/AuthGate';
 
 export default function BuilderPage() {
   const store = useCVStore();
@@ -101,6 +102,7 @@ export default function BuilderPage() {
   }
 
   return (
+    <AuthGate>
     <div className="min-h-screen bg-slate-950 text-slate-200 flex flex-col md:flex-row">
       {/* Mobile Tab Bar */}
       <div className="md:hidden glass border-b border-slate-700/50 sticky top-0 z-40">
@@ -172,5 +174,6 @@ export default function BuilderPage() {
         <Preview />
       </div>
     </div>
+    </AuthGate>
   );
 }

@@ -138,7 +138,7 @@ export default function HomePage() {
                 <ul className="space-y-2">
                   {job.duties.map((d, di) => (
                     <li key={di} className="text-slate-400 text-sm leading-relaxed">
-                      {d.text}{d.highlight ? ` <strong style={{ color: accent }}>${d.highlight}</strong>` : ''}
+                      {d.text}{d.highlight && <> <strong style={{ color: accent }}>{d.highlight}</strong></>}
                     </li>
                   ))}
                 </ul>

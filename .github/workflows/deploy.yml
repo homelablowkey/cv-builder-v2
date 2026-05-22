@@ -1,0 +1,49 @@
+name: Deploy cv-builder-v2
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, lxc109]
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Check build output
+        run: |
+          echo "=== Build files ==="
+          ls dist/
+          echo "=== CSS size ==="
+          wc -c dist/_next/static/chunks/*.css 2>/dev/null || echo "No CSS chunks"
+
+      - name: Deploy via CF Agent
+        run: |
+          RESULT=$(curl -s -X POST http://192.168.0.29:8766/deploy \
+            -H "Content-Type: application/json" \
+            -d "{\"subdomain\":\"cv-builder\",\"app_type\":\"static\",\"app_dir\":\"${GITHUB_WORKSPACE}/dist\"}")
+          echo "Deploy result: $RESULT"
+          echo "$RESULT" | grep -qiE "deployed|success|ok" || { echo "Deploy failed"; exit 1; }
+
+      - name: Verify live site
+        run: |
+          sleep 5
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://cv-builder.loki-co.com/)
+          echo "HTTP status: $STATUS"
+          [ "$STATUS" = "200" ] && echo "Site is live" || { echo "Site returned $STATUS"; exit 1; }

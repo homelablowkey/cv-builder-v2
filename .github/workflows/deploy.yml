@@ -33,13 +33,21 @@ jobs:
           echo "=== CSS size ==="
           wc -c dist/_next/static/chunks/*.css 2>/dev/null || echo "No CSS chunks"
 
+      - name: Sync dist to VM 108
+        run: |
+          rsync -av --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            dist/ \
+            ubuntu@192.168.0.29:/home/ubuntu/apps/cv-builder/
+          echo "Sync complete"
+
       - name: Deploy via CF Agent
         run: |
           RESULT=$(curl -s -X POST http://192.168.0.29:8766/deploy \
             -H "Content-Type: application/json" \
-            -d "{\"subdomain\":\"cv-builder\",\"app_type\":\"static\",\"app_dir\":\"${GITHUB_WORKSPACE}/dist\"}")
+            -d '{"subdomain":"cv-builder","app_type":"static","app_dir":"/home/ubuntu/apps/cv-builder"}')
           echo "Deploy result: $RESULT"
-          echo "$RESULT" | grep -qiE "deployed|success|ok" || { echo "Deploy failed"; exit 1; }
+          echo "$RESULT" | grep -qiE "deployed|success|ok" || { echo "Deploy failed: $RESULT"; exit 1; }
 
       - name: Verify live site
         run: |

@@ -1,7 +1,9 @@
 'use client';
 import { create } from 'zustand';
 import { CVData } from '@/lib/types/cv';
-import { defaultCV } from '@/lib/data/defaultCV';
+import cvDataJson from '@/lib/data/cv-data.json';
+
+const defaultCV = cvDataJson as CVData;
 
 interface CVStore extends CVData {
   // Section visibility toggles
@@ -9,8 +11,8 @@ interface CVStore extends CVData {
   setSection: (key: string, visible: boolean) => void;
 
   // Theme
-  accentColor: string;
-  setAccentColor: (c: string) => void;
+  themeId: string;
+  setThemeId: (id: string) => void;
 
   // Full data setters (generic)
   setHero: (hero: CVData['hero']) => void;
@@ -48,13 +50,13 @@ const initialSections: Record<string, boolean> = {
 export const useCVStore = create<CVStore>((set) => ({
   ...defaultCV,
   sections: { ...initialSections },
-  accentColor: '#00bcd4',
+  themeId: 'cyan',
   previewMode: false,
 
   setSection: (key, visible) =>
     set((s) => ({ sections: { ...s.sections, [key]: visible } })),
 
-  setAccentColor: (accentColor) => set({ accentColor }),
+  setThemeId: (themeId) => set({ themeId }),
 
   setHero: (hero) => set({ hero }),
   setAbout: (about) => set({ about }),
@@ -77,7 +79,7 @@ export const useCVStore = create<CVStore>((set) => ({
     set({
       ...defaultCV,
       sections: { ...initialSections },
-      accentColor: '#00bcd4',
+      themeId: 'cyan',
       previewMode: false,
     }),
 

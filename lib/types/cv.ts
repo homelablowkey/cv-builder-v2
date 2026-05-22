@@ -11,7 +11,7 @@ export interface HeroSection {
 }
 export interface AboutSection {
   heading: string; paragraphs: string[];
-  location: string; country: string;
+  location: string; country: string; languages?: string;
   quickFacts: { label: string; value: string }[];
 }
 export interface SkillItem { name: string; level?: 'EXPERT'|'STRONG'|'PROFICIENT'|''; }
@@ -21,6 +21,7 @@ export interface SkillCategory {
 export interface JobDuty { text: string; highlight?: string; }
 export interface WorkExperience {
   date: string; title: string; company: string; location: string;
+  techStack?: string[];
   duties: JobDuty[];
 }
 export interface Quote { text: string; }
@@ -47,4 +48,5 @@ export interface CVData {
     email: string; linkedin: string; github: string;
     location: string; phone?: string;
   };
+  themeId?: string;
 }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import * as Lucide from 'lucide-react';
 import { useCVStore } from '@/lib/store/useCVStore';
 import { JobDuty, SkillItem } from '@/lib/types/cv';
+import { allThemes } from '@/lib/data/themes';
 
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
@@ -65,9 +66,19 @@ export default function FormPanel() {
           ))}
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400">Accent:</span>
-          <input type="color" value={store.accentColor} onChange={(e) => store.setAccentColor(e.target.value)} className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-0" />
-          <span className="text-xs text-slate-500 font-mono">{store.accentColor}</span>
+          <span className="text-xs text-slate-400">Theme:</span>
+          <div className="flex items-center gap-2">
+            {allThemes.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => store.setThemeId(t.id)}
+                title={t.name}
+                className={`w-6 h-6 rounded-full border-2 transition-all ${store.themeId === t.id ? 'border-white scale-110' : 'border-transparent hover:border-white/30'}`}
+                style={{ background: t.vars['--accent'] }}
+              />
+            ))}
+          </div>
+          <span className="text-xs text-slate-500 font-mono">{allThemes.find(t => t.id === store.themeId)?.name || 'Cyan'}</span>
         </div>
       </div>
 

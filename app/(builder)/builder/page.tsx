@@ -5,6 +5,7 @@ import * as Lucide from 'lucide-react';
 import FormPanel from './_components/FormPanel';
 import { Preview } from './_components/Preview';
 import { useCVStore } from '@/lib/store/useCVStore';
+import { allThemes } from '@/lib/data/themes';
 import { AuthGate } from '@/components/AuthGate';
 
 export default function BuilderPage() {
@@ -21,6 +22,13 @@ export default function BuilderPage() {
       if (saved) {
         const data = JSON.parse(saved);
         store.loadFromJSON(data);
+        // Apply theme CSS vars
+        const themeId = data.themeId || 'cyan';
+        const theme = allThemes.find((t) => t.id === themeId) || allThemes[0];
+        const root = document.documentElement;
+        Object.entries(theme.vars).forEach(([key, value]) => {
+          root.style.setProperty(key, value);
+        });
       }
     } catch (e) { /* noop */ }
   }, []);
@@ -39,14 +47,14 @@ export default function BuilderPage() {
       projects: store.projects,
       education: store.education,
       contact: store.contact,
-      accentColor: store.accentColor,
+      themeId: store.themeId,
     };
     localStorage.setItem('cv-builder-data', JSON.stringify(data));
   }, [
     mounted,
     store.hero, store.about, store.skills, store.experience,
     store.managementQuotes, store.adaptability, store.drives,
-    store.projects, store.education, store.contact, store.accentColor,
+    store.projects, store.education, store.contact, store.themeId,
   ]);
 
   const exportJSON = useCallback(() => {
@@ -61,7 +69,7 @@ export default function BuilderPage() {
       projects: store.projects,
       education: store.education,
       contact: store.contact,
-      accentColor: store.accentColor,
+      themeId: store.themeId,
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
